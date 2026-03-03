@@ -1,3 +1,40 @@
-# patient-visit
+# Módulo Clinical (Atención Clínica / Fichas)
 
-Clinical visit records: medical history, measurements and care details
+Gestiona la ficha clínica de los pacientes, las mediciones y los detalles clínicos ligados a atenciones.
+
+## Partes principales
+
+- `medical_history`: episodio de atención clínica (motivo, diagnóstico, receta, snapshots de nombres).
+- `measurement_type`: catálogo de tipos de medición (peso, presión, etc.).
+- `clinical_measurement`: registro de valores tomados en una atención.
+- `history_detail`: insumos/servicios clínicos usados en la atención (ligados a catálogo).
+
+## Diagrama de base de datos
+
+- `docs/clinical_db.mmd`
+
+## Notas de diseño/desacoplamiento
+
+- Referencias blandas hacia otros dominios:
+  - `medical_history.patient_id` referencia al paciente (Directory/PatientProfile).
+  - `medical_history.doctor_id` y `clinical_measurement.measured_by_staff_id` referencia a Staff.
+  - `medical_history.reservation_id` referencia a Scheduling.
+  - `history_detail.catalog_item_id` referencia a Catalog.
+- Solo se mantienen FKs internas dentro del dominio clínico (entre `medical_history`, `clinical_measurement`, `history_detail`, `measurement_type`).
+
+## Ideas de código futuro
+
+- Definir una interfaz `ClinicalService` para:
+  - Crear consultas, agregar mediciones, listar historial del paciente.
+- El módulo puede publicar eventos de dominio, p.ej.:
+  - "ClinicalHistoryCompleted" → para disparar facturación o tareas administrativas.
+
+## Interfaces sugeridas (Go)
+
+```go
+type ClinicalService interface {
+  CreateMedicalHistory(ctx context.Context, cmd CreateHistoryCommand) (MedicalHistory, error)
+  AddMeasurement(ctx context.Context, cmd AddMeasurementCommand) (ClinicalMeasurement, error)
+  ListHistoryByPatient(ctx context.Context, patientID string) ([]MedicalHistory, error)
+}
+```

@@ -1,12 +1,12 @@
 //go:build !wasm
 
-package patientvisit_test
+package clinicalencounter_test
 
 import (
     "testing"
     "github.com/tinywasm/sqlite"
     "github.com/tinywasm/orm"
-    patientvisit "github.com/veltylabs/patient-visit"
+    clinicalencounter "github.com/veltylabs/clinical-encounter"
 )
 
 type mockPublisher struct{ events []string }
@@ -16,19 +16,19 @@ func (p *mockPublisher) Publish(event string, _ any) error {
     return nil
 }
 
-func setupTestModule(t *testing.T) (*patientvisit.Module, *mockPublisher) {
+func setupTestModule(t *testing.T) (*clinicalencounter.Module, *mockPublisher) {
     t.Helper()
     db, _ := sqlite.Open(":memory:")
     for _, m := range []orm.Model{
-        &patientvisit.MedicalHistory{}, &patientvisit.MeasurementType{},
-        &patientvisit.ClinicalMeasurement{}, &patientvisit.HistoryDetail{},
+        &clinicalencounter.MedicalHistory{}, &clinicalencounter.MeasurementType{},
+        &clinicalencounter.ClinicalMeasurement{}, &clinicalencounter.HistoryDetail{},
     } {
         if err := db.CreateTable(m); err != nil {
             t.Fatalf("create table: %v", err)
         }
     }
     pub := &mockPublisher{}
-    mod, err := patientvisit.New(db, pub)
+    mod, err := clinicalencounter.New(db, pub)
     if err != nil {
         t.Fatalf("New: %v", err)
     }

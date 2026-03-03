@@ -1,18 +1,18 @@
 //go:build !wasm
 
-package patientvisit_test
+package clinicalencounter_test
 
 import (
 	"testing"
 
-	patientvisit "github.com/veltylabs/patient-visit"
+	clinicalencounter "github.com/veltylabs/clinical-encounter"
 )
 
 func TestHistoryDetail(t *testing.T) {
 	mod, _ := setupTestModule(t)
 
 	// Create visit
-	visit, _ := mod.CreateVisit(patientvisit.CreateVisitArgs{
+	visit, _ := mod.CreateVisit(clinicalencounter.CreateVisitArgs{
 		PatientID:           "p1",
 		DoctorID:            "d1",
 		Reason:              "r1",
@@ -23,7 +23,7 @@ func TestHistoryDetail(t *testing.T) {
 	})
 
 	// Add detail on created state (rejected)
-	_, err := mod.AddHistoryDetail(patientvisit.AddHistoryDetailArgs{
+	_, err := mod.AddHistoryDetail(clinicalencounter.AddHistoryDetailArgs{
 		MedicalHistoryID:  visit.ID,
 		CatalogItemID:     "item1",
 		Quantity:          1,
@@ -36,10 +36,10 @@ func TestHistoryDetail(t *testing.T) {
 	}
 
 	// Move to arrived
-	mod.MarkArrived(patientvisit.MarkArrivedArgs{ID: visit.ID})
+	mod.MarkArrived(clinicalencounter.MarkArrivedArgs{ID: visit.ID})
 
 	// Add detail on arrived state (rejected)
-	_, err = mod.AddHistoryDetail(patientvisit.AddHistoryDetailArgs{
+	_, err = mod.AddHistoryDetail(clinicalencounter.AddHistoryDetailArgs{
 		MedicalHistoryID:  visit.ID,
 		CatalogItemID:     "item1",
 		Quantity:          1,
@@ -52,10 +52,10 @@ func TestHistoryDetail(t *testing.T) {
 	}
 
 	// Move to triaged
-	mod.MarkTriaged(patientvisit.MarkTriagedArgs{ID: visit.ID})
+	mod.MarkTriaged(clinicalencounter.MarkTriagedArgs{ID: visit.ID})
 
 	// Add detail on triaged state (OK)
-	detail1, err := mod.AddHistoryDetail(patientvisit.AddHistoryDetailArgs{
+	detail1, err := mod.AddHistoryDetail(clinicalencounter.AddHistoryDetailArgs{
 		MedicalHistoryID:  visit.ID,
 		CatalogItemID:     "item1",
 		Quantity:          1,
@@ -71,10 +71,10 @@ func TestHistoryDetail(t *testing.T) {
 	}
 
 	// Move to in_progress
-	mod.StartVisit(patientvisit.StartVisitArgs{ID: visit.ID})
+	mod.StartVisit(clinicalencounter.StartVisitArgs{ID: visit.ID})
 
 	// Add detail on in_progress state (OK)
-	_, err = mod.AddHistoryDetail(patientvisit.AddHistoryDetailArgs{
+	_, err = mod.AddHistoryDetail(clinicalencounter.AddHistoryDetailArgs{
 		MedicalHistoryID:  visit.ID,
 		CatalogItemID:     "item2",
 		Quantity:          2,
@@ -87,10 +87,10 @@ func TestHistoryDetail(t *testing.T) {
 	}
 
 	// Move to completed
-	mod.CompleteVisit(patientvisit.CompleteVisitArgs{ID: visit.ID})
+	mod.CompleteVisit(clinicalencounter.CompleteVisitArgs{ID: visit.ID})
 
 	// Add detail on completed state (OK for billing reconciliations)
-	_, err = mod.AddHistoryDetail(patientvisit.AddHistoryDetailArgs{
+	_, err = mod.AddHistoryDetail(clinicalencounter.AddHistoryDetailArgs{
 		MedicalHistoryID:  visit.ID,
 		CatalogItemID:     "item3",
 		Quantity:          3,
@@ -103,9 +103,9 @@ func TestHistoryDetail(t *testing.T) {
 	}
 
 	// Cancel a new visit and try to add detail
-	v2, _ := mod.CreateVisit(patientvisit.CreateVisitArgs{PatientID: "p", DoctorID: "d", Reason: "r", PatientNameSnapshot: "n", PatientRutSnapshot: "rut", DoctorNameSnapshot: "dn", AttentionAt: 1600000000})
-	mod.CancelVisit(patientvisit.CancelVisitArgs{ID: v2.ID, Reason: "no show"})
-	_, err = mod.AddHistoryDetail(patientvisit.AddHistoryDetailArgs{
+	v2, _ := mod.CreateVisit(clinicalencounter.CreateVisitArgs{PatientID: "p", DoctorID: "d", Reason: "r", PatientNameSnapshot: "n", PatientRutSnapshot: "rut", DoctorNameSnapshot: "dn", AttentionAt: 1600000000})
+	mod.CancelVisit(clinicalencounter.CancelVisitArgs{ID: v2.ID, Reason: "no show"})
+	_, err = mod.AddHistoryDetail(clinicalencounter.AddHistoryDetailArgs{
 		MedicalHistoryID:  v2.ID,
 		CatalogItemID:     "item1",
 		Quantity:          1,
@@ -118,7 +118,7 @@ func TestHistoryDetail(t *testing.T) {
 	}
 
 	// List history details
-	details, err := mod.ListHistoryDetails(patientvisit.ListHistoryDetailsArgs{MedicalHistoryID: visit.ID})
+	details, err := mod.ListHistoryDetails(clinicalencounter.ListHistoryDetailsArgs{MedicalHistoryID: visit.ID})
 	if err != nil {
 		t.Fatalf("ListHistoryDetails failed: %v", err)
 	}

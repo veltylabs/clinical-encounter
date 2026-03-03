@@ -1,4 +1,4 @@
-module github.com/veltylabs/patient-visit
+module github.com/veltylabs/clinical-encounter
 
 go 1.25.2
 

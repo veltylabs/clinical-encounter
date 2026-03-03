@@ -1,18 +1,18 @@
 //go:build !wasm
 
-package patientvisit_test
+package clinicalencounter_test
 
 import (
 	"testing"
 
-	patientvisit "github.com/veltylabs/patient-visit"
+	clinicalencounter "github.com/veltylabs/clinical-encounter"
 )
 
 func TestCreateVisit(t *testing.T) {
 	mod, _ := setupTestModule(t)
 
 	// OK
-	args := patientvisit.CreateVisitArgs{
+	args := clinicalencounter.CreateVisitArgs{
 		PatientID:           "pat1",
 		DoctorID:            "doc1",
 		Reason:              "headache",
@@ -27,7 +27,7 @@ func TestCreateVisit(t *testing.T) {
 		t.Fatalf("CreateVisit failed: %v", err)
 	}
 
-	if visit.Status != patientvisit.StatusCreated {
+	if visit.Status != clinicalencounter.StatusCreated {
 		t.Errorf("Expected status created, got %v", visit.Status)
 	}
 
@@ -42,7 +42,7 @@ func TestCreateVisit(t *testing.T) {
 
 func TestGetVisit(t *testing.T) {
 	mod, _ := setupTestModule(t)
-	visit, _ := mod.CreateVisit(patientvisit.CreateVisitArgs{
+	visit, _ := mod.CreateVisit(clinicalencounter.CreateVisitArgs{
 		PatientID:           "pat1",
 		DoctorID:            "doc1",
 		Reason:              "headache",
@@ -53,7 +53,7 @@ func TestGetVisit(t *testing.T) {
 	})
 
 	// Found
-	v, err := mod.GetVisit(patientvisit.GetVisitArgs{ID: visit.ID})
+	v, err := mod.GetVisit(clinicalencounter.GetVisitArgs{ID: visit.ID})
 	if err != nil {
 		t.Fatalf("GetVisit failed: %v", err)
 	}
@@ -62,7 +62,7 @@ func TestGetVisit(t *testing.T) {
 	}
 
 	// Not Found
-	_, err = mod.GetVisit(patientvisit.GetVisitArgs{ID: "invalid_id"})
+	_, err = mod.GetVisit(clinicalencounter.GetVisitArgs{ID: "invalid_id"})
 	if err == nil {
 		t.Errorf("Expected error for not found visit")
 	}
@@ -71,7 +71,7 @@ func TestGetVisit(t *testing.T) {
 func TestListVisitsByPatient(t *testing.T) {
 	mod, _ := setupTestModule(t)
 
-	mod.CreateVisit(patientvisit.CreateVisitArgs{
+	mod.CreateVisit(clinicalencounter.CreateVisitArgs{
 		PatientID:           "pat1",
 		DoctorID:            "doc1",
 		Reason:              "r1",
@@ -80,7 +80,7 @@ func TestListVisitsByPatient(t *testing.T) {
 		DoctorNameSnapshot:  "d1",
 		AttentionAt:         1600000000,
 	})
-	mod.CreateVisit(patientvisit.CreateVisitArgs{
+	mod.CreateVisit(clinicalencounter.CreateVisitArgs{
 		PatientID:           "pat1",
 		DoctorID:            "doc2",
 		Reason:              "r2",
@@ -91,7 +91,7 @@ func TestListVisitsByPatient(t *testing.T) {
 	})
 
 	// Found
-	visits, err := mod.ListVisitsByPatient(patientvisit.ListVisitsByPatientArgs{PatientID: "pat1"})
+	visits, err := mod.ListVisitsByPatient(clinicalencounter.ListVisitsByPatientArgs{PatientID: "pat1"})
 	if err != nil {
 		t.Fatalf("ListVisitsByPatient failed: %v", err)
 	}
@@ -103,7 +103,7 @@ func TestListVisitsByPatient(t *testing.T) {
 	}
 
 	// Empty
-	visits, err = mod.ListVisitsByPatient(patientvisit.ListVisitsByPatientArgs{PatientID: "pat_empty"})
+	visits, err = mod.ListVisitsByPatient(clinicalencounter.ListVisitsByPatientArgs{PatientID: "pat_empty"})
 	if err != nil {
 		t.Fatalf("ListVisitsByPatient failed: %v", err)
 	}
@@ -115,7 +115,7 @@ func TestListVisitsByPatient(t *testing.T) {
 func TestListVisitsByDoctor(t *testing.T) {
 	mod, _ := setupTestModule(t)
 
-	mod.CreateVisit(patientvisit.CreateVisitArgs{
+	mod.CreateVisit(clinicalencounter.CreateVisitArgs{
 		PatientID:           "pat1",
 		DoctorID:            "doc1",
 		Reason:              "r1",
@@ -124,7 +124,7 @@ func TestListVisitsByDoctor(t *testing.T) {
 		DoctorNameSnapshot:  "d1",
 		AttentionAt:         1600000000,
 	})
-	mod.CreateVisit(patientvisit.CreateVisitArgs{
+	mod.CreateVisit(clinicalencounter.CreateVisitArgs{
 		PatientID:           "pat2",
 		DoctorID:            "doc1",
 		Reason:              "r2",
@@ -135,7 +135,7 @@ func TestListVisitsByDoctor(t *testing.T) {
 	})
 
 	// All by doctor
-	visits, err := mod.ListVisitsByDoctor(patientvisit.ListVisitsByDoctorArgs{DoctorID: "doc1"})
+	visits, err := mod.ListVisitsByDoctor(clinicalencounter.ListVisitsByDoctorArgs{DoctorID: "doc1"})
 	if err != nil {
 		t.Fatalf("ListVisitsByDoctor failed: %v", err)
 	}
@@ -147,7 +147,7 @@ func TestListVisitsByDoctor(t *testing.T) {
 	}
 
 	// Filter by date
-	visitsDate, err := mod.ListVisitsByDoctor(patientvisit.ListVisitsByDoctorArgs{DoctorID: "doc1", Date: 1600000000})
+	visitsDate, err := mod.ListVisitsByDoctor(clinicalencounter.ListVisitsByDoctorArgs{DoctorID: "doc1", Date: 1600000000})
 	if err != nil {
 		t.Fatalf("ListVisitsByDoctor by date failed: %v", err)
 	}
@@ -155,7 +155,7 @@ func TestListVisitsByDoctor(t *testing.T) {
 		t.Errorf("Expected 2 visits within date range, got %d", len(visitsDate))
 	}
 
-	visitsDateOut, err := mod.ListVisitsByDoctor(patientvisit.ListVisitsByDoctorArgs{DoctorID: "doc1", Date: 1600086400})
+	visitsDateOut, err := mod.ListVisitsByDoctor(clinicalencounter.ListVisitsByDoctorArgs{DoctorID: "doc1", Date: 1600086400})
 	if err != nil {
 		t.Fatalf("ListVisitsByDoctor by date failed: %v", err)
 	}

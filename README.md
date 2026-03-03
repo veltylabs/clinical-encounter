@@ -14,7 +14,7 @@ Gestiona la ficha clínica de los pacientes, las mediciones y los detalles clín
 
 ## Diagrama de base de datos
 
-- `docs/clinical_db.mmd`
+- `docs/diagrams/database.md
 
 ## Notas de diseño/desacoplamiento
 

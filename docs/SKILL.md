@@ -1,7 +1,7 @@
-# SKILL: patient-visit module
+# SKILL: clinical-encounter module
 
 ## Overview
-The `patient-visit` module handles medical consultation lifecycles, clinical measurements, and triage.
+The `clinical-encounter` module handles medical consultation lifecycles, clinical measurements, and triage.
 
 ## Core Constraints & Rules
 - **Snapshot Pattern:** Never perform cross-module database/API lookups to fetch external entities (like Patients or Doctors). Clients and external callers MUST pass snapshot counterpart fields (e.g., `patient_name_snapshot`, `doctor_specialty_snapshot`) when creating or updating visit records.

@@ -1,6 +1,6 @@
 //go:build !wasm
 
-package patientvisit
+package clinicalencounter
 
 import (
 	"github.com/tinywasm/fmt"

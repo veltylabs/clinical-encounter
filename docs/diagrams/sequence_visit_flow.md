@@ -4,35 +4,35 @@ sequenceDiagram
     actor Doctor
     participant Reception
     participant Scheduling
-    participant patient-visit
+    participant clinical-encounter
     participant EventBus
 
-    Scheduling->>patient-visit: CreateVisit(patient_id, doctor_id, attention_at, ...)<br/>Status: created
-    patient-visit-->>Scheduling: MedicalHistory{id, status: created}
+    Scheduling->>clinical-encounter: CreateVisit(patient_id, doctor_id, attention_at, ...)<br/>Status: created
+    clinical-encounter-->>Scheduling: MedicalHistory{id, status: created}
 
-    Reception->>patient-visit: MarkArrived(id)<br/>Status: arrived
-    patient-visit->>EventBus: publish(visit.patient_arrived)
+    Reception->>clinical-encounter: MarkArrived(id)<br/>Status: arrived
+    clinical-encounter->>EventBus: publish(visit.patient_arrived)
     EventBus-->>Nurse: 🔔 Patient registered
 
-    Nurse->>patient-visit: AddMeasurement(visit_id, type_id, value, unit)<br/>vitals during triage
-    patient-visit-->>Nurse: ClinicalMeasurement saved
+    Nurse->>clinical-encounter: AddMeasurement(visit_id, type_id, value, unit)<br/>vitals during triage
+    clinical-encounter-->>Nurse: ClinicalMeasurement saved
 
-    Nurse->>patient-visit: MarkTriaged(id)<br/>Status: triaged
-    patient-visit->>EventBus: publish(visit.patient_triaged)
+    Nurse->>clinical-encounter: MarkTriaged(id)<br/>Status: triaged
+    clinical-encounter->>EventBus: publish(visit.patient_triaged)
     EventBus-->>Doctor: 🔔 Patient ready for attention
 
-    Doctor->>patient-visit: StartVisit(id)<br/>Status: in_progress
+    Doctor->>clinical-encounter: StartVisit(id)<br/>Status: in_progress
 
-    Doctor->>patient-visit: AddMeasurement(visit_id, type_id, value, unit)<br/>additional during consultation
-    patient-visit-->>Doctor: ClinicalMeasurement saved
+    Doctor->>clinical-encounter: AddMeasurement(visit_id, type_id, value, unit)<br/>additional during consultation
+    clinical-encounter-->>Doctor: ClinicalMeasurement saved
 
-    Nurse->>patient-visit: AddHistoryDetail(visit_id, catalog_item_id, qty, ...)<br/>items / services used
-    patient-visit-->>Nurse: HistoryDetail saved
+    Nurse->>clinical-encounter: AddHistoryDetail(visit_id, catalog_item_id, qty, ...)<br/>items / services used
+    clinical-encounter-->>Nurse: HistoryDetail saved
 
-    Doctor->>patient-visit: CompleteVisit(id)<br/>Status: completed
-    patient-visit->>EventBus: publish(visit.completed)
+    Doctor->>clinical-encounter: CompleteVisit(id)<br/>Status: completed
+    clinical-encounter->>EventBus: publish(visit.completed)
     EventBus-->>Scheduling: update reservation status
     EventBus-->>Billing: trigger invoice
 
-    note over patient-visit: CancelVisit(id) available from<br/>created / arrived / triaged / in_progress<br/>publishes visit.cancelled
+    note over clinical-encounter: CancelVisit(id) available from<br/>created / arrived / triaged / in_progress<br/>publishes visit.cancelled
 ```

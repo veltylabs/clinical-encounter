@@ -1,19 +1,19 @@
 //go:build !wasm
 
-package patientvisit_test
+package clinicalencounter_test
 
 import (
 	"testing"
 
-	patientvisit "github.com/veltylabs/patient-visit"
+	clinicalencounter "github.com/veltylabs/clinical-encounter"
 )
 
 func TestMeasurement(t *testing.T) {
 	mod, _ := setupTestModule(t)
 
 	// Setup data
-	mtype, _ := mod.CreateMeasurementType(patientvisit.CreateMeasurementTypeArgs{Name: "BP", DefaultUnit: "mmHg"})
-	visit, _ := mod.CreateVisit(patientvisit.CreateVisitArgs{
+	mtype, _ := mod.CreateMeasurementType(clinicalencounter.CreateMeasurementTypeArgs{Name: "BP", DefaultUnit: "mmHg"})
+	visit, _ := mod.CreateVisit(clinicalencounter.CreateVisitArgs{
 		PatientID:           "p1",
 		DoctorID:            "d1",
 		Reason:              "r1",
@@ -24,7 +24,7 @@ func TestMeasurement(t *testing.T) {
 	})
 
 	// Add measurement on created state (should be rejected)
-	_, err := mod.AddMeasurement(patientvisit.AddMeasurementArgs{
+	_, err := mod.AddMeasurement(clinicalencounter.AddMeasurementArgs{
 		MedicalHistoryID:  visit.ID,
 		MeasuredByStaffID: "nurse1",
 		MeasurementTypeID: mtype.ID,
@@ -36,11 +36,11 @@ func TestMeasurement(t *testing.T) {
 	}
 
 	// Move to arrived -> triaged
-	mod.MarkArrived(patientvisit.MarkArrivedArgs{ID: visit.ID})
-	mod.MarkTriaged(patientvisit.MarkTriagedArgs{ID: visit.ID})
+	mod.MarkArrived(clinicalencounter.MarkArrivedArgs{ID: visit.ID})
+	mod.MarkTriaged(clinicalencounter.MarkTriagedArgs{ID: visit.ID})
 
 	// Add measurement on triaged state (should be OK)
-	m1, err := mod.AddMeasurement(patientvisit.AddMeasurementArgs{
+	m1, err := mod.AddMeasurement(clinicalencounter.AddMeasurementArgs{
 		MedicalHistoryID:  visit.ID,
 		MeasuredByStaffID: "nurse1",
 		MeasurementTypeID: mtype.ID,
@@ -55,10 +55,10 @@ func TestMeasurement(t *testing.T) {
 	}
 
 	// Move to in_progress
-	mod.StartVisit(patientvisit.StartVisitArgs{ID: visit.ID})
+	mod.StartVisit(clinicalencounter.StartVisitArgs{ID: visit.ID})
 
 	// Add measurement on in_progress state (should be OK)
-	_, err = mod.AddMeasurement(patientvisit.AddMeasurementArgs{
+	_, err = mod.AddMeasurement(clinicalencounter.AddMeasurementArgs{
 		MedicalHistoryID:  visit.ID,
 		MeasuredByStaffID: "doc1",
 		MeasurementTypeID: mtype.ID,
@@ -70,10 +70,10 @@ func TestMeasurement(t *testing.T) {
 	}
 
 	// Move to completed
-	mod.CompleteVisit(patientvisit.CompleteVisitArgs{ID: visit.ID})
+	mod.CompleteVisit(clinicalencounter.CompleteVisitArgs{ID: visit.ID})
 
 	// Add measurement on completed state (should be rejected)
-	_, err = mod.AddMeasurement(patientvisit.AddMeasurementArgs{
+	_, err = mod.AddMeasurement(clinicalencounter.AddMeasurementArgs{
 		MedicalHistoryID:  visit.ID,
 		MeasuredByStaffID: "nurse1",
 		MeasurementTypeID: mtype.ID,
@@ -85,13 +85,13 @@ func TestMeasurement(t *testing.T) {
 	}
 
 	// Inactive type test
-	inactiveType, _ := mod.CreateMeasurementType(patientvisit.CreateMeasurementTypeArgs{Name: "InactiveType", DefaultUnit: "unit"})
-	mod.ToggleMeasurementType(patientvisit.ToggleMeasurementTypeArgs{ID: inactiveType.ID, IsActive: false})
+	inactiveType, _ := mod.CreateMeasurementType(clinicalencounter.CreateMeasurementTypeArgs{Name: "InactiveType", DefaultUnit: "unit"})
+	mod.ToggleMeasurementType(clinicalencounter.ToggleMeasurementTypeArgs{ID: inactiveType.ID, IsActive: false})
 
-	visit2, _ := mod.CreateVisit(patientvisit.CreateVisitArgs{PatientID: "p1", DoctorID: "d1", Reason: "r1", PatientNameSnapshot: "n1", PatientRutSnapshot: "rut1", DoctorNameSnapshot: "dn1", AttentionAt: 1600000000})
-	mod.MarkArrived(patientvisit.MarkArrivedArgs{ID: visit2.ID})
+	visit2, _ := mod.CreateVisit(clinicalencounter.CreateVisitArgs{PatientID: "p1", DoctorID: "d1", Reason: "r1", PatientNameSnapshot: "n1", PatientRutSnapshot: "rut1", DoctorNameSnapshot: "dn1", AttentionAt: 1600000000})
+	mod.MarkArrived(clinicalencounter.MarkArrivedArgs{ID: visit2.ID})
 
-	_, err = mod.AddMeasurement(patientvisit.AddMeasurementArgs{
+	_, err = mod.AddMeasurement(clinicalencounter.AddMeasurementArgs{
 		MedicalHistoryID:  visit2.ID,
 		MeasuredByStaffID: "nurse1",
 		MeasurementTypeID: inactiveType.ID,
@@ -103,7 +103,7 @@ func TestMeasurement(t *testing.T) {
 	}
 
 	// List Measurements
-	measurements, err := mod.ListMeasurements(patientvisit.ListMeasurementsArgs{MedicalHistoryID: visit.ID})
+	measurements, err := mod.ListMeasurements(clinicalencounter.ListMeasurementsArgs{MedicalHistoryID: visit.ID})
 	if err != nil {
 		t.Fatalf("ListMeasurements failed: %v", err)
 	}
@@ -112,7 +112,7 @@ func TestMeasurement(t *testing.T) {
 	}
 
 	// List Measurements By Patient
-	patientMeasurements, err := mod.ListMeasurementsByPatient(patientvisit.ListMeasurementsByPatientArgs{
+	patientMeasurements, err := mod.ListMeasurementsByPatient(clinicalencounter.ListMeasurementsByPatientArgs{
 		PatientID:         "p1",
 		MeasurementTypeID: mtype.ID,
 	})

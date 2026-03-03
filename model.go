@@ -1,6 +1,6 @@
 //go:build !wasm
 
-package patientvisit
+package clinicalencounter
 
 // Visit status — FHIR-aligned lifecycle
 const (

@@ -22,3 +22,7 @@ Transitions emit business events (`visit.patient_arrived`, `visit.patient_triage
 1. **Dependency Injection:** The module core (`Module` struct) relies on injected dependencies (`*orm.DB`, `EventPublisher`) initialized via `New(db, pub)`. There is no global state.
 2. **Snapshotting:** The `clinical-encounter` module does not make cross-module HTTP/DB calls to fetch patient or doctor names. Instead, these are taken as input parameters during creation and stored as immutable "snapshots" (e.g., `PatientNameSnapshot`).
 3. **Agnostic Storage & Execution:** Uses `tinywasm/orm` to abstract database interactions, making it trivially mockable with `tinywasm/sqlite` in tests and able to run on PostgreSQL in production. Isomorphic codebase logic (runs in WebAssembly frontend and Go server backend).
+
+## 5. Compliance & Standards
+Para entender el alineamiento de este módulo con estándares internacionales de salud, revisa el anexo de compatibilidad:
+- [HL7 / FHIR Roadmap](FHIR_ROADMAP.md)

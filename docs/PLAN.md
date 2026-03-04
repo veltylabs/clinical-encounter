@@ -11,7 +11,7 @@
 - **Agent Setup:** Run `go install github.com/tinywasm/devflow/cmd/gotest@latest` before anything.
 - **Dependencies:** No external libraries. Standard library + `tinywasm/*` polyfills only (Use `tinywasm/json` instead of standard `encoding/json`).
 - **Build Tags:** All server-side files MUST carry `//go:build !wasm`.
-- **Database:** `model.go` is the source of truth. DO NOT edit `model_db.go` manually; run the `ormc` code generator after changes.
+- **Database:** `model.go` is the source of truth. DO NOT edit `model_orm.go` manually; run the `ormc` code generator after changes.
 - **Testing:** Split logic per rule `_back_test.go` + `//go:build !wasm`. Run via `gotest` (no args). No external assertion libraries.
 - **Publishing:** Update documentation FIRST, then run `gopush 'message'`. Never `git commit/push` directly.
 
@@ -25,23 +25,29 @@ Add domain-meaningful fields (`StartedAt`, `FinishedAt`, `Cie10Code`, `LoincCode
 
 ---
 
-## Stage Checklist
+## Remaining Tasks
 
-| # | Stage | Files Touched | Status |
-|---|-------|--------------|--------|
-| 1 | [Schema Evolution](PLAN_STAGE_1_SCHEMA.md) | `model.go`, `model_db.go` | pending |
-| 2 | [Business Logic Updates](PLAN_STAGE_2_LOGIC.md) | `mcp_visit_status.go`, `mcp_measurement_type.go` | pending |
-| 3 | [FHIR Adapter Layer](PLAN_STAGE_3_ADAPTER.md) | `fhir_types.go` (new), `fhir_adapter.go` (new) | pending |
-| 4 | [Tests & Documentation](PLAN_STAGE_4_TESTS.md) | `tests/fhir_adapter_back_test.go` (new), existing tests | pending |
+The functional logic for FHIR adaptation (Stages 1 through 4) has already been pushed to the remote branch `origin/feat-fhir-compliance-3370008295037280168`.
+
+The only remaining tasks are:
+
+| # | Task | Status |
+|---|------|--------|
+| 1 | Merge the `feat-fhir-compliance...` branch into `main`. | pending |
+| 2 | Pull the latest changes to the local `main` branch. | pending |
+| 3 | Install/Update the newly refactored `ormc` CLI: `go install github.com/tinywasm/orm/cmd/ormc@latest` | pending |
+| 4 | Run `ormc` in the root of the module to generate the new `model_orm.go` file. | pending |
+| 5 | Delete the legacy `model_db.go` file (as it's been replaced by `model_orm.go`). | pending |
+| 6 | Run `gotest` to ensure the project compiles and all tests pass with the new generated ORM code. | pending |
 
 ---
 
 ## Verification
 
 ```bash
-# Run full test suite after all stages are complete
+# Run full test suite after completing the ORM migration
 gotest
 
-# Publish if all tests pass
-gopush 'feat: FHIR compliance — CIE-10, LOINC, UCUM, Period tracking, adapter layer'
+# Publish the refactored ORM integration
+gopush 'chore: migrate auto-generated ORM file to model_orm.go suffix'
 ```
